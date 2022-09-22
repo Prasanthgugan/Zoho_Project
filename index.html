@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <title>Toll Management Application</title>
+  <style>
+    /* TABLE START */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 15px;
+    }
+    th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+      background-color: #dddddd;
+      color: #00000082;
+    }
+    td {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 12px;
+    }
+    /* TABLE END */
+    /* MODAL POPUP START */
+    .modal {
+      display: none; /* Hidden by default */
+      position: fixed; /* Stay in place */
+      z-index: 1; /* Sit on top */
+      padding-top: 100px; /* Location of the box */
+      left: 0;
+      top: 0;
+      width: 100%; /* Full width */
+      height: 100%; /* Full height */
+      overflow: auto; /* Enable scroll if needed */
+      background-color: rgb(0,0,0); /* Fallback color */
+      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+    /* Modal Content */
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 49%;
+      margin-top: -60px;
+    }
+    /* The Close Button */
+    .close {
+      color: #aaaaaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    /* MODAL POPUP END */
+    /* COMMON CSS STRAT */
+    .main-container {
+      padding: 25px;
+    }
+    .form-inline {  
+      display: flex;
+      flex-flow: row wrap;
+      align-items: center;
+    }
+    .search {
+      border-radius: 20px;
+      padding: 5px;
+      border: 1px solid #000;
+      margin-left: 15px;
+    }
+    .search_container input { 
+      font-family:  FontAwesome, sans-serif;
+      padding: 6px;
+      text-indent: 5px;
+      width: 100%;
+    }
+    .filter-btn {
+      background-color: #ddd;
+    }
+    .vehicle-h {
+      margin-right: 12px;
+    }
+    .tab-btn-group {
+      position: absolute;
+      right: 0;
+      padding: 30px;
+      display: inline-flex;
+    }
+    /* COMMON CSS END */
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <h2>Toll Management Application</h1>
+      <hr>
+      <div class="form-inline">
+        <h3 class="vehicle-h" id="vehicle_list_lable">Vehicle Entries</h3>
+        <h3 class="vehicle-h" id="toll_list_lable" style="display: none;">Toll Gate List</h3>
+        <div class="w3-dropdown-click" id="vehicle_list_lable_filter" >
+          <button onclick="myFunction()" class="w3-button filter-btn"><i class="fa fa-filter"></i></button>
+          <div id="filter-list" class="w3-dropdown-content w3-bar-block w3-border">
+            <span class="w3-bar-item w3-button" onclick="search_vehicle_filter('all')">ALL</span>
+          </div>
+        </div>
+        <div class="search_container">
+          <input class="search" id="search_vehicle" name="search_vehicle" onkeyup="vehicle_search()" placeholder="&#xf002;  Search Vehicle" >
+          <input class="search" id="search_toll" style="display: none;" name="search_toll" onkeyup="toll_search()" placeholder="&#xf002;  Search a Toll" >
+        </div>
+        <div class="tab-btn-group">
+          <button type="button" id="add_vehicle_entry" style="background-color: #0b55a4;color: #fff; border: none; border-radius: 5px; padding: 8px; margin-right: 10px;" 
+            onclick="add_vehicle_entry()">Add Vehicle Entry</button>
+          <button type="button" id="add_toll_popup" style="background-color: #0b55a4;color: #fff; border: none; border-radius: 5px; padding: 8px; margin-right: 10px;" 
+            onclick="add_toll_popup()">Add New Toll</button>
+          <button type="button" id="view_all_vehicle"  style="background-color: #0b55a4;color: #fff; border: none; border-radius: 5px; padding: 8px; margin-right: 10px; display: none;" 
+              onclick="get_vehicle_list()">Back to Vehicle List</button>
+          <button type="button" id="view_all_tolls"  style="background-color: #0b55a4;color: #fff; border: none; border-radius: 5px; padding: 8px; margin-right: 10px;" 
+            onclick="get_toll_list()">View All Tolls</button>
+        </div>
+      </div>
+      <br>
+      <!-- VEHICLE LIST STRAT -->
+      <div id="vehicle_list">
+        <table>
+          <thead>
+            <tr>
+              <th>VEHICLE TYPE</th>
+              <th>VEHICLE NUMBER</th>
+              <th>DATE/TIME</th>
+              <th>TOLL NAME</th>
+              <th>TARIFF</th>
+            </tr>
+          </thead>
+          <tbody id="load_vehicle_list"></tbody>
+        </table>
+      </div>
+      <!-- VEHICLE LIST END -->
+      <!-- TOLL LIST STRAT -->
+      <div id="toll_list" style="display: none;">
+        <table>
+          <thead>
+            <tr>
+              <th>TOLL NAME</th>
+              <th>CAR/JEEP/VAN</th>
+              <th>LCV</th>
+              <th>TRUCK/BUS</th>
+              <th>HEAVY VEHICLE</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody id="load_toll_list"></tbody>
+        </table>
+      </div>
+      <!-- TOLL LIST END -->
+  </div>
+
+  <!-- ADD TOLL POPUP STRAT -->
+  <div id="AddTollModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <span class="add_toll_close close">&times;</span>
+      <h3>Add New Toll</h3>
+      <h5>Toll Name*</h5>
+      <form id="toll_form" >
+        <input type="text" id="toll_name" name="toll_name" placeholder="Enter toll name"> <br> <br>
+        <h5>Vehicle fare details*</h5>
+        <div>
+            <input name="vehicle_type_1" id="vehicle_type_1" value="Car/Jeep/Van" readonly > 
+            <input id="single_journey_1" name="single_journey_1" placeholder="Single Journey" > 
+            <input id="return_journey_1" name="return_journey_1" placeholder="Return Journey">
+        </div>
+        <br>
+        <div>
+            <input name="vehicle_type_2" id="vehicle_type_2" value="LCV" readonly >
+            <input id="single_journey_2" name="single_journey_2" placeholder="Single Journey" > 
+            <input id="return_journey_2" name="return_journey_2" placeholder="Return Journey">
+        </div>
+        <br>
+        <div>
+            <input name="vehicle_type_3" id="vehicle_type_3" value="Truck/Bus" readonly >
+            <input id="single_journey_3" name="single_journey_3" placeholder="Single Journey" > 
+            <input id="return_journey_3" name="return_journey_3" placeholder="Return Journey">
+        </div>
+        <br>
+        <div>
+            <input name="vehicle_type_4" id="vehicle_type_4" value="Heavy vehicle" readonly >
+            <input id="single_journey_4" name="single_journey_4" placeholder="Single Journey" > 
+            <input id="return_journey_4"  name="return_journey_4" placeholder="Return Journey">
+        </div>
+      </form>  
+      <br>
+      <div>
+          <button type="button" style="background-color: #0b55a4;color: #fff; border: none; border-radius: 2px; padding: 8px; width: 99%;" 
+            onclick="insert_toll()">Add Details</button>
+      </div>
+      <br>
+    </div>
+  </div>
+  <!-- ADD TOLL POPUP END -->
+
+  <!-- ADD VEHICLE POPUP START -->
+  <div id="AddVehicleEntery" class="modal">
+    <div class="modal-content">
+      <span class="add_toll_close2 close">&times;</span>
+      <h3>Add new entry</h3>
+      <h5>select  toll name*</h5>
+      <form id="vehicle_form" >
+        <div>
+          <select name="toll_name_add" id="toll_name_add"> 
+              <option value="" selected disabled >Choose Vehicle</option> 
+          </select>
+        </div>
+        <h5>select  vehicle type*</h5>
+        <div>
+          <select name="vehicle_type_add_1" id="vehicle_type_add_1" onchange="get_vehicle_journey_rate()"> 
+              <option value="" selected disabled >Choose Vehicle</option> 
+              <option value="Car/Van/Jeep" >Car/Van/Jeep </option>    
+              <option value="LCV">LCV</option>
+              <option value="Truck/Bus">Truck/Bus</option>
+              <option value="Heavy Vehicle">Heavy Vehicle</option>
+          </select>
+        </div>
+        <h5>Vehicle Number*</h5>
+        <input type="text" id="vehicle_number" name="vehicle_number" placeholder="Enter login id" onchange="get_vehicle_journey_rate()"> <br> 
+        <h5>Tariff*</h5>
+        <input type="text" id="tariff" name="tariff" placeholder="Tariff amount"> 
+      </form>
+      <br><br>
+      <div>
+        <button type="button" style="background-color: #0b55a4;color: #fff; border: none; border-radius: 2px; padding: 8px; width: 99%;" 
+            onclick="insert_vehicle()">Add Entry</button>
+      </div>
+    </div>
+  </div>
+  <!-- ADD VEHICLE POPUP END -->
+  
+</div>
+
+  <script>
+
+    var vehicle_array = [];
+    var vehicle_array_new = [];
+    var toll_array = [];
+    var temp_vehicle_data = [];
+
+    // *** FILTER DROPDOWN *** 
+      function myFunction() {
+        var x = document.getElementById("filter-list");
+        if (x.style.display === "none") {
+          x.style.display = "block";
+        } else {
+          x.style.display = "none";
+        }
+      }
+
+    // *** ADD TOLL *** 
+      // Get the modal
+      var add_modal = document.getElementById("AddTollModal");
+      var add_vehicle = document.getElementById("AddVehicleEntery");
+      // Get the button that opens the modal
+      var add_toll_btn = document.getElementById("add_toll_popup");
+      var add_vehicle_btn = document.getElementById("add_vehicle_entry");
+      var view_all_btn = document.getElementById("view_all_tolls");
+      // Get the <span> element that closes the modal
+      var add_toll_span = document.getElementsByClassName("add_toll_close")[0];
+      var add_toll_span2 = document.getElementsByClassName("add_toll_close2")[0];
+      
+      // When the user clicks the button, open the modal 
+      add_toll_btn.onclick = function() {
+        add_modal.style.display = "block";
+      }
+      // When the user clicks on <span> (x), close the modal
+        add_toll_span.onclick = function() {
+        add_modal.style.display = "none";
+      }
+      // When the user clicks the button, open the modal 
+      add_vehicle_btn.onclick = function() {
+        add_vehicle.style.display = "block";
+      }
+      // When the user clicks on <span> (x), close the modal
+      add_toll_span2.onclick = function() {
+        add_vehicle.style.display = "none";
+      }
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function(event) {
+        if (event.target == add_modal) {
+          add_modal.style.display = "none";
+        }
+      }
+    
+    // *** GET LIST ***
+      var view_all_tolls = document.getElementById("view_all_tolls");
+      var view_all_vehicle = document.getElementById("view_all_vehicle");
+      var toll_list = document.getElementById("toll_list");
+      var vehicle_list = document.getElementById("vehicle_list");
+      var vehicle_list_lable = document.getElementById("vehicle_list_lable");
+      var toll_list_lable = document.getElementById("toll_list_lable");
+      var search_toll = document.getElementById("search_toll"); 
+      var search_vehicle = document.getElementById("search_vehicle"); 
+
+      var vehicle_list_lable_filter = document.getElementById("vehicle_list_lable_filter");
+
+      view_all_tolls.onclick = function() {
+        toll_list.style.display = "block";
+        vehicle_list.style.display = "none";
+        view_all_vehicle.style.display = "block";
+        view_all_tolls.style.display = "none";
+        vehicle_list_lable.style.display = "none";
+        toll_list_lable.style.display = "block";
+        vehicle_list_lable_filter.style.display = "none";
+        search_toll.style.display = "block";
+        search_vehicle.style.display = "none";
+      }
+      view_all_vehicle.onclick = function() {
+        vehicle_list.style.display = "block";
+        toll_list.style.display = "none";
+        view_all_tolls.style.display = "block";
+        view_all_vehicle.style.display = "none";
+        vehicle_list_lable.style.display = "block";
+        toll_list_lable.style.display = "none";
+        vehicle_list_lable_filter.style.display = "block";
+        search_toll.style.display = "none";
+        search_vehicle.style.display = "block";
+      }
+      
+    // *** DYNAMIC TOLL NAME DROPDOWN ***
+      function Filter_value() {
+        const value = document.querySelector("#filter-list") ;
+        const value2 = document.querySelector("#toll_name_add") ;
+        let str2 = ` <option value="" selected disabled >Choose Vehicle</option> 
+        `;
+        let str = `<span class="w3-bar-item w3-button" onclick="search_vehicle_filter('all')">ALL</span>
+        `;
+        for (toll of  toll_array) {
+          str += `<span class="w3-bar-item w3-button" onclick="search_vehicle_filter('${toll.get_toll_name}')">${toll.get_toll_name}</span>
+          `
+          str2 += `<option value="${toll.get_toll_name}" >${toll.get_toll_name} </option>`;
+        }
+        value.innerHTML = str;
+        value2.innerHTML = str2;
+        console.log(value2.innerHTML);
+        return;
+      }
+
+    // *** ADD TOLL ***
+      function insert_toll() {
+        var get_toll_name = document.getElementById("toll_name").value;
+        var get_vehicle_type_1 = document.getElementById("vehicle_type_1").value;
+        var get_single_journey_1 = document.getElementById("single_journey_1").value;
+        var get_return_journey_1 = document.getElementById("return_journey_1").value;
+        var get_vehicle_type_2 = document.getElementById("vehicle_type_2").value;
+        var get_single_journey_2 = document.getElementById("single_journey_2").value;
+        var get_return_journey_2 = document.getElementById("return_journey_2").value;
+        var get_vehicle_type_3 = document.getElementById("vehicle_type_3").value;
+        var get_single_journey_3 = document.getElementById("single_journey_3").value;
+        var get_return_journey_3 = document.getElementById("return_journey_3").value;
+        var get_vehicle_type_4 = document.getElementById("vehicle_type_4").value;
+        var get_single_journey_4 = document.getElementById("single_journey_4").value;
+        var get_return_journey_4 = document.getElementById("return_journey_4").value;
+        
+
+        toll_array.push({
+          'get_toll_name': get_toll_name,
+          'journey_rate_1': get_single_journey_1+'/'+get_return_journey_1,
+          'journey_rate_2': get_single_journey_2+'/'+get_return_journey_2,
+          'journey_rate_3': get_single_journey_3+'/'+get_return_journey_3,
+          'journey_rate_4': get_single_journey_4+'/'+get_return_journey_4,
+          'vehicle_fare_details' : [
+            {
+              'vehicle_type': get_vehicle_type_1,
+              'single_journey': get_single_journey_1,
+              'return_journey': get_return_journey_1
+            },
+            {
+              'vehicle_type': get_vehicle_type_2,
+              'single_journey': get_single_journey_2,
+              'return_journey': get_return_journey_2
+            },
+            {
+              'vehicle_type': get_vehicle_type_3,
+              'single_journey': get_single_journey_3,
+              'return_journey': get_return_journey_3
+            },
+            {
+              'vehicle_type': get_vehicle_type_4,
+              'single_journey': get_single_journey_4,
+              'return_journey': get_return_journey_4
+            }
+          ]
+        });
+
+        // *** DISPLAY TOLL LIST IN HTML ***
+          let toll_table = document.getElementById("load_toll_list");
+          toll_table.innerHTML = "";
+          let toll_tr = "";
+          toll_array.forEach( (x, index) => {
+              console.log(index);
+              toll_tr += '<tr>';
+              toll_tr += '<td>' + x.get_toll_name + '</td>' + '<td>' + x.journey_rate_1 + '</td>' + '<td>' + x.journey_rate_2 + '</td>' + '<td>' + x.journey_rate_3 + '</td>' + '<td>' + x.journey_rate_4 + '</td> <td onclick="delete_toll('+ index +')" > <span class="add_toll_close2 close">&times;</span></td>';
+              toll_tr += '</tr>'
+          })
+          toll_table.innerHTML += toll_tr;
+          add_modal.style.display = "none";
+          Filter_value();
+          document.getElementById("toll_form").reset();
+      }
+
+      // *** DELETE TOLL ***
+        function delete_toll(index) {
+          toll_array.splice(index, 1);
+          console.log(toll_array);
+          // *** DISPLAY TOLL LIST IN HTML ***
+            let toll_table = document.getElementById("load_toll_list");
+            toll_table.innerHTML = "";
+            let toll_tr = "";
+            toll_array.forEach( (x, index) => {
+                toll_tr += '<tr>';
+                toll_tr += '<td>' + x.get_toll_name + '</td>' + '<td>' + x.journey_rate_1 + '</td>' + '<td>' + x.journey_rate_2 + '</td>' + '<td>' + x.journey_rate_3 + '</td>' + '<td>' + x.journey_rate_4 + '</td> <td onclick="delete_toll('+ index +')" > <span class="add_toll_close2 close">&times;</span></td>';
+                toll_tr += '</tr>'
+            })
+            toll_table.innerHTML += toll_tr;
+        }
+
+
+      // *** ADD VEHICLE ***
+      function insert_vehicle() {
+        var get_toll_name_add = document.getElementById("toll_name_add").value;
+        var get_vehicle_type_add_1 = document.getElementById("vehicle_type_add_1").value;
+        var get_vehicle_number = document.getElementById("vehicle_number").value;
+        var get_tariff = document.getElementById("tariff").value;
+
+        var date = new Date();
+        var current_date = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+ date.getDate();
+        var current_time = date.getHours()+":"+date.getMinutes()+":"+ date.getSeconds();
+        var date_time = current_date+" "+current_time;
+
+        vehicle_array.push({
+          'vehicle_type': get_vehicle_type_add_1,
+          'vehicle_number': get_vehicle_number,
+          'date': date_time,
+          'toll_name_': get_toll_name_add,
+          'tariff_1': get_tariff
+        });
+
+        console.log(vehicle_array);
+        vehicle_array_new = vehicle_array;
+
+        // *** DISPLAY VEHICLE LIST IN HTML ***
+          let vehicle_table = document.getElementById("load_vehicle_list");
+          vehicle_table.innerHTML = "";
+          let vehicle_tr = "";
+          vehicle_array_new.forEach(x => {
+              vehicle_tr += '<tr>';
+              vehicle_tr += '<td>' + x.vehicle_type + '</td>' + '<td>' + x.vehicle_number + '</td>' + '<td>' + x.date + '</td>'+ '<td>' + x.toll_name_ + '</td>'+ '<td>' + x.tariff_1 + '</td>';
+              vehicle_tr += '</tr>'
+          })
+          vehicle_table.innerHTML += vehicle_tr;
+
+          add_vehicle.style.display = "none";
+          document.getElementById("vehicle_form").reset();
+
+      }
+
+      // *** GET TOLL VEHICLE JOURNEY RATE ***
+        function get_vehicle_journey_rate() {
+          var get_single_journey_rate;
+          var get_return_journey_rate;
+          var vehicle_type_add_1 = document.getElementById("vehicle_type_add_1").value;
+          var toll_name_add = document.getElementById("toll_name_add").value;
+          var vehicle_number = document.getElementById("vehicle_number").value;
+          var tariff = document.getElementById("tariff");
+
+          // * FILTER PARTICULAR VEHICLE JOURNEY RATE *
+            toll_array.forEach((x, index) => {
+              x.vehicle_fare_details.forEach(y => {
+                if(y.vehicle_type == vehicle_type_add_1) {
+                  get_single_journey_rate = y.single_journey;
+                  get_return_journey_rate = y.return_journey;
+                }
+              });
+            });
+            tariff.value= get_single_journey_rate;
+
+
+          var date_1 = new Date();
+          var current_date_1 = date_1.getFullYear()+"-"+(date_1.getMonth()+1)+"-"+ date_1.getDate();
+          var current_time_1 = date_1.getHours()+":"+date_1.getMinutes()+":"+ date_1.getSeconds();
+          var date_time_1 = current_date_1+" "+current_time_1;
+
+          console.log(vehicle_array);
+          // * CHECK VEHICLE ENTRY WITHIN 1 HOUR *
+            vehicle_array.forEach((x, index) => {
+                if(x.vehicle_number == vehicle_number) {
+                  var date1 = new Date(date_time_1);
+                  var date2 = new Date('2022-9-22 1:46:43');
+                  // var date2 = new Date(x.date);
+                  var diffTime = Math.abs(date2 - date1);
+                  if(diffTime <= 3600000) {
+                    document.getElementById("tariff").value = get_return_journey_rate;
+                    console.log('With in 1 Hour'+get_return_journey_rate);
+                  } else {
+                    document.getElementById("tariff").value = get_single_journey_rate;
+                    console.log('Above 1 Hour'+get_return_journey_rate);
+                  }
+                } else {
+                  document.getElementById("tariff").value = get_single_journey_rate;
+                }
+            });
+
+        }
+
+
+        
+      // *** VEHICLE FILTER ***
+      function search_vehicle_filter(params) {
+        // var temp_vehicle_data = vehicle_array;
+        if(params != 'all') {
+          var temp_vehicle_data_1 = vehicle_array.filter(vehicle => vehicle.toll_name_ == params);
+          vehicle_array_new = [];
+          vehicle_array_new.push(temp_vehicle_data_1);
+        } else {
+          vehicle_array_new = [];
+          vehicle_array_new.push(vehicle_array);
+        }
+
+        // *** DISPLAY VEHICLE LIST IN HTML ***
+          let vehicle_table = document.getElementById("load_vehicle_list");
+            vehicle_table.innerHTML = "";
+            let vehicle_tr = "";
+            vehicle_array_new[0].forEach(x => {
+                vehicle_tr += '<tr>';
+                vehicle_tr += '<td>' + x.vehicle_type + '</td>' + '<td>' + x.vehicle_number + '</td>' + '<td>' + x.date + '</td>'+ '<td>' + x.toll_name_ + '</td>'+ '<td>' + x.tariff_1 + '</td>';
+                vehicle_tr += '</tr>'
+          })
+          vehicle_table.innerHTML += vehicle_tr;
+
+      }
+
+      // *** VEHICLE SEARCH ***
+        function vehicle_search() {
+          var vehicle_search_val = document.getElementById("search_vehicle").value;
+          var temp_vehicle_data_search = vehicle_array.filter(str => str.vehicle_number.toLowerCase().indexOf(vehicle_search_val.toLowerCase()) !== -1);
+          vehicle_array_new = [];
+          vehicle_array_new.push(temp_vehicle_data_search);
+          console.log(vehicle_array_new);
+          // *** DISPLAY VEHICLE LIST IN HTML ***
+            let vehicle_table = document.getElementById("load_vehicle_list");
+              vehicle_table.innerHTML = "";
+              let vehicle_tr = "";
+              vehicle_array_new[0].forEach(x => {
+                  vehicle_tr += '<tr>';
+                  vehicle_tr += '<td>' + x.vehicle_type + '</td>' + '<td>' + x.vehicle_number + '</td>' + '<td>' + x.date + '</td>'+ '<td>' + x.toll_name_ + '</td>'+ '<td>' + x.tariff_1 + '</td>';
+                  vehicle_tr += '</tr>'
+            })
+            vehicle_table.innerHTML += vehicle_tr;
+        }
+
+      // *** Toll SEARCH ***
+        function toll_search() {
+          var toll_search_val = document.getElementById("search_toll").value;
+          var temp_toll_data_search = toll_array.filter(str => str.get_toll_name.toLowerCase().indexOf(toll_search_val.toLowerCase()) !== -1);
+          toll_array_new = [];
+          toll_array_new.push(temp_toll_data_search);
+
+          // *** DISPLAY TOLL LIST IN HTML ***
+          let toll_table = document.getElementById("load_toll_list");
+          toll_table.innerHTML = "";
+          let toll_tr = "";
+          toll_array_new[0].forEach(x => {
+              toll_tr += '<tr>';
+              toll_tr += '<td>' + x.get_toll_name + '</td>' + '<td>' + x.journey_rate_1 + '</td>' + '<td>' + x.journey_rate_2 + '</td>' + '<td>' + x.journey_rate_3 + '</td>' + '<td>' + x.journey_rate_4 + '</td> ' + '</td> <td> <span class="add_toll_close2 close">&times;</span></td>';
+              toll_tr += '</tr>'
+          })
+          toll_table.innerHTML += toll_tr;
+        }
+
+      // *** DUPLICATE VEHICLE ARRAY ***
+        let vehicle_data = [{
+            'vehicle_type': 'Car',
+            'vehicle_number': 'TN33HN2983',
+            'date': '15-02-2022',
+            'toll_name_': 'Chennai',
+            'tariff_1': '100'
+          },
+          {
+            'vehicle_type': 'Jeep',
+            'vehicle_number': 'TN40KG4367',
+            'date': '07-10-2022',
+            'toll_name_': 'Trichy',
+            'tariff_1': '50'
+          },
+          {
+            'vehicle_type': 'Van',
+            'vehicle_number': 'TN50GM2323',
+            'date': '30-09-2022',
+            'toll_name_': 'Madurai',
+            'tariff_1': '40'
+
+        }];
+
+      // *** DUPLICATE VEHICLE ARRAY ***
+        let toll_data = [{
+          'toll_name_d': 'Chennai',
+          'vehicle_fare_details' : [{
+            'car_jeep_van': '60/30',
+            'lcv': '60/40',
+            'truck_bus': '200/300',
+            'heavy_vehicle': '350/400'
+          },
+          {
+            'car_jeep_van': '50/40',
+            'lcv': '40/60',
+            'truck_bus': '150/360',
+            'heavy_vehicle': '450/500'
+          },
+          {
+            'car_jeep_van': '20/30',
+            'lcv': '80/40',
+            'truck_bus': '300/370',
+            'heavy_vehicle': '380/480'
+          }]
+        }];
+
+  </script>
+</body>
+</html>
