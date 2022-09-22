@@ -5,10 +5,20 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <title>Toll Management Application</title>
   <style>
     /* TABLE START */
+    *{
+      font-family: 'Arial';
+    }
+    h1{
+      font-size: 30px;
+      font-weight:lighter;
+    }
+    h3{
+      font-size: 25px;
+      font-weight:lighter;
+    }
     table {
       border-collapse: collapse;
       width: 100%;
@@ -26,20 +36,24 @@
       text-align: left;
       padding: 12px;
     }
+    h5{
+      font-size: 15px;
+      font-weight: lighter;
+    }
     /* TABLE END */
     /* MODAL POPUP START */
     .modal {
-      display: none; /* Hidden by default */
-      position: fixed; /* Stay in place */
-      z-index: 1; /* Sit on top */
-      padding-top: 100px; /* Location of the box */
+      display: none; 
+      position: fixed; 
+      z-index: 1; 
+      padding-top: 100px; 
       left: 0;
       top: 0;
-      width: 100%; /* Full width */
-      height: 100%; /* Full height */
-      overflow: auto; /* Enable scroll if needed */
-      background-color: rgb(0,0,0); /* Fallback color */
-      background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      width: 100%; 
+      height: 100%; 
+      overflow: auto; 
+      background-color: rgb(0,0,0); 
+      background-color: rgba(0,0,0,0.4); 
     }
     /* Modal Content */
     .modal-content {
@@ -97,20 +111,49 @@
       padding: 30px;
       display: inline-flex;
     }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    } 
+
+    .dropdown-content span {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+  }
+
+    .dropdown-content span:hover {
+      background-color: #f1f1f1;
+    }
+
+    .dropdown:hover .dropdown-content {
+    display: block;
+}
     /* COMMON CSS END */
+
   </style>
 </head>
 <body>
   <div class="main-container">
-    <h2>Toll Management Application</h1>
+    <h1>Toll Management Application</h1>
       <hr>
       <div class="form-inline">
         <h3 class="vehicle-h" id="vehicle_list_lable">Vehicle Entries</h3>
         <h3 class="vehicle-h" id="toll_list_lable" style="display: none;">Toll Gate List</h3>
-        <div class="w3-dropdown-click" id="vehicle_list_lable_filter" >
-          <button onclick="myFunction()" class="w3-button filter-btn"><i class="fa fa-filter"></i></button>
-          <div id="filter-list" class="w3-dropdown-content w3-bar-block w3-border">
-            <span class="w3-bar-item w3-button" onclick="search_vehicle_filter('all')">ALL</span>
+        <div class="dropdown" id="vehicle_list_lable_filter" >
+          <button onclick="myFunction()" class=""><i class="fa fa-filter"></i></button>
+          <div id="filter-list" class="dropdown-content ">
+            <span onclick="search_vehicle_filter('all')">ALL</span>
           </div>
         </div>
         <div class="search_container">
@@ -231,7 +274,7 @@
           </select>
         </div>
         <h5>Vehicle Number*</h5>
-        <input type="text" id="vehicle_number" name="vehicle_number" placeholder="Enter login id" onchange="get_vehicle_journey_rate()"> <br> 
+        <input type="text" id="vehicle_number" name="vehicle_number" placeholder="Enter login id" onkeyup="get_vehicle_journey_rate()"> <br> 
         <h5>Tariff*</h5>
         <input type="text" id="tariff" name="tariff" placeholder="Tariff amount"> 
       </form>
@@ -262,8 +305,7 @@
           x.style.display = "none";
         }
       }
-
-    // *** ADD TOLL *** 
+ 
       // Get the modal
       var add_modal = document.getElementById("AddTollModal");
       var add_vehicle = document.getElementById("AddVehicleEntery");
@@ -339,16 +381,15 @@
         const value2 = document.querySelector("#toll_name_add") ;
         let str2 = ` <option value="" selected disabled >Choose Vehicle</option> 
         `;
-        let str = `<span class="w3-bar-item w3-button" onclick="search_vehicle_filter('all')">ALL</span>
+        let str = `<span  onclick="search_vehicle_filter('all')">ALL</span>
         `;
         for (toll of  toll_array) {
-          str += `<span class="w3-bar-item w3-button" onclick="search_vehicle_filter('${toll.get_toll_name}')">${toll.get_toll_name}</span>
+          str += `<span  onclick="search_vehicle_filter('${toll.get_toll_name}')">${toll.get_toll_name}</span>
           `
           str2 += `<option value="${toll.get_toll_name}" >${toll.get_toll_name} </option>`;
         }
         value.innerHTML = str;
         value2.innerHTML = str2;
-        console.log(value2.innerHTML);
         return;
       }
 
@@ -418,7 +459,6 @@
       // *** DELETE TOLL ***
         function delete_toll(index) {
           toll_array.splice(index, 1);
-          console.log(toll_array);
           // *** DISPLAY TOLL LIST IN HTML ***
             let toll_table = document.getElementById("load_toll_list");
             toll_table.innerHTML = "";
@@ -483,13 +523,13 @@
           // * FILTER PARTICULAR VEHICLE JOURNEY RATE *
             toll_array.forEach((x, index) => {
               x.vehicle_fare_details.forEach(y => {
-                if(y.vehicle_type == vehicle_type_add_1) {
+                if(y.vehicle_type == vehicle_type_add_1 && x.get_toll_name ==toll_name_add ) {
                   get_single_journey_rate = y.single_journey;
                   get_return_journey_rate = y.return_journey;
                 }
               });
             });
-            tariff.value= get_single_journey_rate;
+            tariff.value= get_single_journey_rate
 
 
           var date_1 = new Date();
@@ -502,8 +542,8 @@
             vehicle_array.forEach((x, index) => {
                 if(x.vehicle_number == vehicle_number) {
                   var date1 = new Date(date_time_1);
-                  var date2 = new Date('2022-9-22 1:46:43');
-                  // var date2 = new Date(x.date);
+                  // var date2 = new Date('2022-9-22 1:46:43');
+                  var date2 = new Date(x.date);
                   var diffTime = Math.abs(date2 - date1);
                   if(diffTime <= 3600000) {
                     document.getElementById("tariff").value = get_return_journey_rate;
@@ -519,8 +559,6 @@
 
         }
 
-
-        
       // *** VEHICLE FILTER ***
       function search_vehicle_filter(params) {
         // var temp_vehicle_data = vehicle_array;
@@ -583,53 +621,6 @@
           })
           toll_table.innerHTML += toll_tr;
         }
-
-      // *** DUPLICATE VEHICLE ARRAY ***
-        let vehicle_data = [{
-            'vehicle_type': 'Car',
-            'vehicle_number': 'TN33HN2983',
-            'date': '15-02-2022',
-            'toll_name_': 'Chennai',
-            'tariff_1': '100'
-          },
-          {
-            'vehicle_type': 'Jeep',
-            'vehicle_number': 'TN40KG4367',
-            'date': '07-10-2022',
-            'toll_name_': 'Trichy',
-            'tariff_1': '50'
-          },
-          {
-            'vehicle_type': 'Van',
-            'vehicle_number': 'TN50GM2323',
-            'date': '30-09-2022',
-            'toll_name_': 'Madurai',
-            'tariff_1': '40'
-
-        }];
-
-      // *** DUPLICATE VEHICLE ARRAY ***
-        let toll_data = [{
-          'toll_name_d': 'Chennai',
-          'vehicle_fare_details' : [{
-            'car_jeep_van': '60/30',
-            'lcv': '60/40',
-            'truck_bus': '200/300',
-            'heavy_vehicle': '350/400'
-          },
-          {
-            'car_jeep_van': '50/40',
-            'lcv': '40/60',
-            'truck_bus': '150/360',
-            'heavy_vehicle': '450/500'
-          },
-          {
-            'car_jeep_van': '20/30',
-            'lcv': '80/40',
-            'truck_bus': '300/370',
-            'heavy_vehicle': '380/480'
-          }]
-        }];
 
   </script>
 </body>
